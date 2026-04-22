@@ -1,22 +1,26 @@
-import express from "express"
-import mongoose from "mongoose"
-import cors from "cors"
-import authRoutes from "./routes/authRoutes.js"
-import dotenv from "dotenv"
+import express from "express";
+import mongoose from "mongoose";
+import cors from "cors";
+import authRoutes from "./routes/authRoutes.js";
+import jobRoutes from "./routes/jobRoutes.js";
+import dotenv from "dotenv";
 
-dotenv.config()
+dotenv.config();
 
-const app = express()
+const app = express();
 
-app.use(cors())
-app.use(express.json())
+app.use(cors());
+app.use(express.json());
 
+app.use("/auth", authRoutes);
+app.use("/user", authRoutes);
+app.use("/jobs", jobRoutes);
 
-app.use("/auth", authRoutes)
-app.use("/user", authRoutes)
-
-mongoose.connect(process.env.MONGODB_URI)
+mongoose
+  .connect(process.env.MONGODB_URI)
   .then(() => console.log("MongoDB connected"))
-  .catch(err => console.error("MongoDB connection error:", err))
-  
-app.listen(process.env.PORT, () => console.log(`Server running on port ${process.env.PORT}`))
+  .catch((err) => console.error("MongoDB connection error:", err));
+
+app.listen(process.env.PORT, () =>
+  console.log(`Server running on port ${process.env.PORT}`),
+);
