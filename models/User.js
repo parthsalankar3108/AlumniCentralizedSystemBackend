@@ -6,11 +6,23 @@ const userSchema = new mongoose.Schema({
   password: { type: String, required: true },
   department: { type: String },
   graduationYear: { type: Number, required: true },
-  about: {type:String},
-  role:{
-    type:String,
+  about: { type: String },
+  skills: [
+    {
+      type: String,
+      trim: true,
+    },
+  ],
+  interests: [
+    {
+      type: String,
+      trim: true,
+    },
+  ],
+  role: {
+    type: String,
     enum: ["student", "alumni", "admin"],
-    default: "student"
+    default: "student",
   },
   isApproved: {
     type: String,
@@ -66,16 +78,20 @@ const userSchema = new mongoose.Schema({
 
   connections: [
     {
-    userId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
+      userId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+      status: {
+        type: String,
+        enum: ["pending", "accepted", "rejected"],
+        default: "pending",
+      },
+      type: {
+        type: String,
+        enum: ["sent", "received"],
+      },
     },
-    status: {
-      type: String,
-      enum: ["pending", "accepted", "rejected"],
-      default: "pending",
-    },
-  },
   ],
 });
 
