@@ -278,7 +278,6 @@ const getSuggestions = async (req, res) => {
       c.userId.toString()
     );
 
-    // 🔥 BUILD SMART FILTER DYNAMICALLY
     const orConditions = [];
 
     if (currentUser.department) {
@@ -299,7 +298,6 @@ const getSuggestions = async (req, res) => {
       orConditions.push({ interests: { $in: currentUser.interests } });
     }
 
-    // 🔥 FETCH CANDIDATES (BOOSTED FILTER)
     const candidates = await User.find({
       _id: { $nin: [...connectionIds, userId] },
       ...(orConditions.length > 0 && { $or: orConditions }),
@@ -307,7 +305,6 @@ const getSuggestions = async (req, res) => {
       .select("name email department graduationYear skills interests currentdetails")
       .limit(100);
 
-    // 🔥 SCORING FUNCTION
     const calculateScore = (user, candidate) => {
       let score = 0;
 
@@ -327,7 +324,6 @@ const getSuggestions = async (req, res) => {
       )
         score += 6;
 
-      // 🔥 SKILL MATCH (case insensitive)
       const userSkills = (user.skills || []).map((s) => s.toLowerCase());
       const candidateSkills = (candidate.skills || []).map((s) =>
         s.toLowerCase()
@@ -339,7 +335,6 @@ const getSuggestions = async (req, res) => {
 
       score += skillMatch.length * 3;
 
-      // 🔥 INTEREST MATCH
       const userInterests = (user.interests || []).map((i) =>
         i.toLowerCase()
       );
@@ -356,7 +351,6 @@ const getSuggestions = async (req, res) => {
       return score;
     };
 
-    // 🔥 RANKING
     const ranked = candidates
       .map((c) => ({
         user: c,
@@ -391,7 +385,6 @@ const followUser = async (req, res) => {
     const isFollowing = currentUser.following.includes(receiverId);
 
     if (isFollowing) {
-      // 🔴 UNFOLLOW
       currentUser.following.pull(receiverId);
       receiverUser.followers.pull(currentUserId);
 
@@ -400,7 +393,6 @@ const followUser = async (req, res) => {
 
       return res.json({ message: "Unfollowed successfully", following: false });
     } else {
-      // 🟢 FOLLOW
       currentUser.following.push(receiverId);
       receiverUser.followers.push(currentUserId);
 
